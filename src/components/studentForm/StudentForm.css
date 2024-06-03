@@ -1,0 +1,7 @@
+form{
+    margin: 1cm; 
+    padding: 34px;
+  }
+form:hover{
+  box-shadow: 20px 9px 2px 5px rgb(52, 52, 52);
+}  

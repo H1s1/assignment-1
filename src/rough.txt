@@ -1,0 +1,161 @@
+students = [
+  {
+    "Roll-no": "144",
+    "Name": "Mark",
+    "Marks": "Otto"
+  },
+  {
+    "Roll-no": "145",
+    "Name": "Jacob",
+    "Marks": "Thornton"
+  },
+  {
+    "Roll-no": "233",
+    "Name": "Alex",
+    "Marks": "Carter"
+  },
+  {
+    "Roll-no": "476",
+    "Name": "Raj",
+    "Marks": "Sahani"
+  }
+]
+
+
+
+import React, { useState } from 'react';
+import './StudentTable.css';
+import axios from 'axios';
+
+function StudentTable(props) {
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editedStudent, setEditedStudent] = useState({
+    RollNum: '',
+    Name: '',
+    Marks: ''
+  });
+  
+  
+  const students = props.students;
+
+  function handleEdit(index) {
+    setEditingIndex(index);
+    setEditedStudent({
+      RollNum: students[index].RollNum,
+      Name: students[index].Name,
+      Marks: students[index].Marks
+    });
+  }
+
+  async function handleUpdate(index) {
+    try {
+      const response = await axios.post('http://localhost:5000/update', {
+        RollNum: editedStudent.RollNum, Name: editedStudent.Name, Marks: editedStudent.Marks, 
+      });
+      console.log(response.data);
+      if(response.status === 200){
+        //small pop-up sticker ---> Data has been updated
+      }
+      props.fetchdata();
+    } catch (error) {
+      console.log("Error message ", error);
+    }
+    setEditingIndex(null);
+  }
+
+  function handleInputChange(event, key) {
+    const { value } = event.target;
+    setEditedStudent((prevStudent) => ({
+      ...prevStudent,
+      [key]: value
+    }));
+  }
+
+  async function handleDelete(index){
+    try {
+      const response = await axios.post('http://localhost:5000/delete', { RollNum: students[index].RollNum})
+      if(response.status === 200){
+        //small popup sticker ---> deletion sucessful
+      }
+      console.log(response);
+      props.fetchdata();
+    } catch (error) {
+      console.error("Error in deleating data! ", error);
+    }
+  }
+  
+ 
+
+  return (
+    <div>
+      <table className="table">
+        <thead>
+          <tr>
+            <th scope="col">S.No.</th>
+            <th scope="col">Roll No.
+            <button>+</button>
+            </th>
+            <th scope="col">Name
+            <button>+</button>
+            </th>
+            <th scope="col">Marks
+            <button>+</button>
+            </th>
+            <th scope="col">Action</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {students.map((student, index) => (
+            <tr key={index}>
+              <th scope="row">{index + 1}</th>
+              <td>
+                  {student.RollNum}
+              </td>
+              <td>
+                {editingIndex === index ? (
+                  <input
+                    type="text"
+                    value={editedStudent.Name}
+                    onChange={(event) =>
+                      handleInputChange(event, "Name")
+                    }
+                  />
+                ) : (
+                  student.Name
+                )}
+              </td>
+              <td>
+                {editingIndex === index ? (
+                  <input
+                    type="number"
+                    value={editedStudent.Marks}
+                    onChange={(event) =>
+                      handleInputChange(event, "Marks")
+                    }
+                  />
+                ) : (
+                  student.Marks
+                )}
+              </td>
+              <td>
+                {editingIndex === index ? (
+                  <button onClick={() => handleUpdate(index)}>Update</button>
+                ) : (
+                  <button onClick={() => handleEdit(index)}>Edit</button>
+                )}
+              </td>
+              <td>
+                <button 
+                 onClick={ () => handleDelete(index)} 
+                >Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default StudentTable;

@@ -1,0 +1,14 @@
+.table{
+   
+  }
+tr:hover{
+  box-shadow: 20px 5px 3px black;
+  
+}
+.sort{
+  margin-left: 0px;
+  padding-left: 3px;
+  padding-top: 0px;
+  height: 30px;
+  align-items: center;
+}
